@@ -13,9 +13,9 @@ datasource db {
 
 model User {
   name           String 
-  lastName       String
-  userName       String @unique
-  password       String
+  lastName       String?
+  userName       String? @unique
+  password       String?
   email          String @unique
   id             String @id @default(auto()) @map("_id") @db.ObjectId
   products       Product[]
