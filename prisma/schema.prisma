@@ -28,8 +28,9 @@ model User {
   image          String?
   accounts       Account[]
   sessions       Session[]
-  favoritos      Favorito[]
+  favorites      Favorito[]
   active         Boolean @default(true)
+  feedback       String?
 }
 model Favorito {
   id                 String @id @default(auto()) @map("_id") @db.ObjectId
@@ -37,6 +38,7 @@ model Favorito {
   userId             String? @db.ObjectId
   product            Product?   @relation(fields: [productId], references: [id])
   productId          String? @db.ObjectId
+  active             Boolean @default(true)         
 }
 model Product {
   id                 String @id @default(auto()) @map("_id") @db.ObjectId
@@ -47,7 +49,8 @@ model Product {
   userId             String? @db.ObjectId
   pictures           String[] @default([])
   description        String
-  category           String?
+  category           Category  @relation(fields: [categoryId], references: [id])
+  categoryId         String @db.ObjectId          
   availability       Availability?
   features           Feature?
   createdAt          DateTime @default(now())
@@ -55,6 +58,12 @@ model Product {
   transaction        Transanction[]
   paymentMethod      PaymentMethod?  @relation(fields: [methodName], references: [paymentName])
   methodName         String?
+}
+
+model Category {
+name     String
+id       String @id @default(auto()) @map("_id") @db.ObjectId
+products Product[]
 }
 
 type Availability {
