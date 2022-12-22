@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.JWT_SECRET,
 
   session: {
-    strategy: "jwt",
+    // strategy: "jwt", -sacado de algun lado, no en docs
     // Use JSON Web Tokens for session instead of database sessions.
     // This option can be used with or without a database for users/accounts.
     // Note: `jwt` is automatically set to `true` if no database is specified.
@@ -83,8 +83,9 @@ export const authOptions: NextAuthOptions = {
   // option is set - or by default if no database is specified.
   // https://next-auth.js.org/configuration/options#jwt
   jwt: {
+    encryption: true, // https://blog.openreplay.com/user-authentication-with-google-next-auth/
     // A secret to use for key generation (you should set this explicitly)
-    secret: 'testsecret',
+    //secret: 'testsecret',
     maxAge: 60 * 60 * 24 * 30,
     // Set to true to use encryption (default: false)
     // encryption: true,
@@ -100,7 +101,7 @@ export const authOptions: NextAuthOptions = {
   // pages is not specified for that route.
   // https://next-auth.js.org/configuration/pages
   pages: {
-    signIn: '/auth/signin',  // Displays signin buttons
+    // signIn: '/auth/signin',  // Displays signin buttons
     // signOut: '/auth/signout', // Displays form with sign out button
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // Used for check email page
@@ -126,7 +127,17 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async jwt(token, user, account, profile, isNewUser) { 
-      return token 
+      if (account ?.accessToken) {
+        token.accessToken = account.accessToken
+      }
+      return token;
+    },
+    /* We have setup a redirect URL that will redirect unauthenticated users who access the user route which we will later create, or any other route back to the home page upon authentication. */
+      redirect: async (url, _baseUrl)=>{
+      if (url === '/user') {
+        return Promise.resolve('/')
+      }
+      return  Promise.resolve('/')
     }
   },
 
