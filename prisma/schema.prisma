@@ -21,16 +21,18 @@ model User {
   products       Product[]
   rater          Rating[] @relation(name: "userRater")
   rated          Rating[] @relation(name: "userRated")
-  userPicture    String?
+  userPicture    String @default("https://firebasestorage.googleapis.com/v0/b/rentalibre-fbbda.appspot.com/o/userPicture%2Fusuario.png?alt=media&token=9fa3eb31-e33e-429f-8af7-0519377d0e61")
   seller         Transanction[] @relation(name: "seller")
   buyer          Transanction[] @relation(name: "buyer") 
   emailVerified  DateTime?
-  image          String?
+  image          String @default("https://firebasestorage.googleapis.com/v0/b/rentalibre-fbbda.appspot.com/o/userPicture%2Fusuario.png?alt=media&token=9fa3eb31-e33e-429f-8af7-0519377d0e61")
   accounts       Account[]
   sessions       Session[]
   favorites      Favorito[]
   active         Boolean @default(true)
   feedback       String?
+  codigoPostal   String?
+  country        String?
 }
 model Favorito {
   id                 String @id @default(auto()) @map("_id") @db.ObjectId
@@ -112,7 +114,7 @@ model Transanction {
 
 model Account {
   id                String @id @default(auto()) @map("_id") @db.ObjectId 
-  userId            String
+  userId            String @db.ObjectId
   type              String
   provider          String
   providerAccountId String
@@ -130,7 +132,7 @@ model Account {
 model Session {
   id           String @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
-  userId       String
+  userId       String   @db.ObjectId
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
