@@ -4,43 +4,21 @@ import React, { useState, useEffect } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebaseConfig";
 import { extendTheme } from "@chakra-ui/react";
-import { GetServerSideProps } from "next";
 import { Select } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
 import DashboardRentedProducts from "../components/dashboardRentedProducts";
 import PhoneNumberInput from "../components/phone-number-input";
+import { provincias } from "./provincias-ciudades/provincias";
+import { localidades } from "./provincias-ciudades/localidades";
 
-export const getServerSideProps = async () => {
-  const c = await fetch("http://localhost:3001/countries");
-  const countries = await c.json();
-  const s = await fetch("http://localhost:3001/states");
-  const states = await s.json();
-  const ci = await fetch("http://localhost:3001/cities");
-  const cities = await ci.json();
-  return {
-    props: {
-      countries,
-      states,
-      cities,
-    },
-  };
-};
 
-interface Props {
-  countries: any[];
-  states: any[];
-  cities: any[];
-}
-
-export default function Profile({cities,states,countries}:Props) {
+export default function Profile() {
   const [editUser, setEditUser] = useState({
     name: "",
     userPicture: "",
     lastName: "",
     codigoPostal: "",
-    countryId: "",
     countryName: "",
-    stateId: "",
     stateName: "",
     cityName: "",
     phoneNumber: "",
@@ -114,30 +92,22 @@ export default function Profile({cities,states,countries}:Props) {
 
   function handleSelect(e: any) {
     if (e.target.name === "country") {
-      const countryName = countries?.find(
-        (c:any) => c.id.toString() === e.target.value
-      )?.name;
       setEditUser((prevState: any) => {
         return {
           ...prevState,
-          countryId: e.target.value,
-          countryName: countryName,
+          countryName: e.target.value
         };
       });
     }
     if (e.target.name === "state") {
-      const stateName = states?.find(
-        (s:any) => s.id.toString() === e.target.value
-      )?.name;
       setEditUser((prevState: any) => {
-        return { ...prevState, stateId: e.target.value, stateName: stateName };
+        return { ...prevState, stateName: e.target.value };
       });
     }
     if (e.target.name === "city") {
       setEditUser((prevState: any) => {
         return { ...prevState, cityName: e.target.value };
       });
-      console.log(editUser);
     }
   }
   function handleLastClick() {
@@ -189,9 +159,7 @@ export default function Profile({cities,states,countries}:Props) {
       userPicture: "",
       lastName: "",
       codigoPostal: "",
-      countryId: "",
       countryName: "",
-      stateId: "",
       stateName: "",
       cityName: "",
       phoneNumber: "",
@@ -457,11 +425,7 @@ export default function Profile({cities,states,countries}:Props) {
                 ml="2%"
                 onChange={(e) => handleSelect(e)}
               >
-                {countries
-                  ?.filter((c:any) => c.id.toString() === "5")
-                  .map((c:any) => (
-                    <option value={c.id}>{c.name}</option>
-                  ))}
+                    <option value='Argentina'>Argentina</option>
               </Select>
             </Flex>
           ) : null}
@@ -475,9 +439,8 @@ export default function Profile({cities,states,countries}:Props) {
               ml="2%"
               onChange={(e) => handleSelect(e)}
             >
-              {states?.filter((s:any) => s.id_country.toString() === editUser.countryId)
-                .map((s:any) => (
-                  <option value={s.id}>{s.name}</option>
+              {provincias().map((s:any) => (
+                  <option value={s.nombre}>{s.nombre}</option>
                 ))}
             </Select>
           ) : null}
@@ -491,9 +454,10 @@ export default function Profile({cities,states,countries}:Props) {
               ml="2%"
               onChange={(e) => handleSelect(e)}
             >
-              {cities?.filter((ci:any) => ci.id_state.toString() === editUser.stateId)
-                .map((ci:any) => (
-                  <option value={ci.name}>{ci.name}</option>
+              {localidades()
+              .filter((ci:any) => ci.provincia.nombre === editUser.stateName)
+              .map((ci:any) => (
+                  <option value={ci.municipio.nombre}>{ci.municipio.nombre}</option>
                 ))}
             </Select>
           ) : null}
