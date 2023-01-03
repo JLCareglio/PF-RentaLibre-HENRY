@@ -131,7 +131,7 @@ export const userRouter = router({
     }),
   getUser: publicProcedure
   //  protectedProcedure
-    .input(z.object({ userId: z.string().optional() }))
+    .input(z.object({ userId: z.string()}))
     .query(async ({ ctx, input }) => {
       const { userId } = input;
       const user = await ctx.prisma.user.findUnique({
@@ -140,6 +140,7 @@ export const userRouter = router({
           // || ctx.session.user.id,
         },
         include: {
+          products: true,
           buyer: {
             include: {
               product: true,
