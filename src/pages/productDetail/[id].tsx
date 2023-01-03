@@ -36,7 +36,6 @@ import {
 } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import React from "react";
 // type Params = {
 //   params: {
 //     id: string;
@@ -89,11 +88,7 @@ export default function ProductDetail() {
             Authorization: `Bearer APP_USR-5672095275524228-121515-ef3e594e4fc515b3e4d7d98cff8d97e1-1263932815`
         },
         body: JSON.stringify({
-            payer:
-              {
-                email: session?.data?.user?.email,
-                phone: ""
-              },
+            payer_email: session?.data?.session?.user.email,
             items: [
               {
                 title: product?.title,
@@ -113,7 +108,7 @@ export default function ProductDetail() {
           })
       });
       const json = await res.json();
-      console.log(json, session?.data?.user?.email)
+      console.log(json)
       router.push(json.init_point)
     } catch (error) {
       console.error(error);
