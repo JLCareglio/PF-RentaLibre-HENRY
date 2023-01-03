@@ -46,7 +46,6 @@ import {
 export default function WithSubnavigation() {
   const categories = trpc.category.getCategories.useQuery().data;
   const { data: session, status } = useSession();
-  // console.log({ session, status });
   const router = useRouter();
   const { isOpen, onToggle } = useDisclosure();
   const [inputSearch, setInputSearch] = useState("");
@@ -54,21 +53,21 @@ export default function WithSubnavigation() {
     router.query.category ?? ""
   );
 
-  const handleChange = (event: React.FormEvent<HTMLInputElement>) =>
+  const handleChange = (event: any) =>
     setInputSearch(event.currentTarget.value);
-  const handleSubmit = (inputText: String) => {
+  const handleSubmit = (inputText: any) => {
     // const { category } = router.query;
     setInputSearch(inputText);
     inputText += `&category=${selectCategory}`;
     router.push(`/productList?q=${inputText}`);
   };
-  const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const keyDownHandler = (event: any) => {
     if (event.code === "Enter") {
       handleSubmit(inputSearch);
     }
   };
 
-  const handleChangeSelect = (e: React.FormEvent<HTMLInputElement>) => {
+  const handleChangeSelect = (e: any) => {
     setSelectCategory(e.currentTarget.value);
     document.getElementById("inputSearch")?.focus();
     // const { category } = router.query;
@@ -131,8 +130,10 @@ export default function WithSubnavigation() {
               maxWidth={"max-content"}
               onChange={handleChangeSelect}
             >
-              {categories?.map((c) => (
-                <option value={c.name}>{c.name} </option>
+              {categories?.map((c, index) => (
+                <option key={index} value={c.name}>
+                  {c.name}{" "}
+                </option>
               ))}
             </Select>
             <Input
@@ -263,7 +264,7 @@ export default function WithSubnavigation() {
             fontWeight={600}
             color={"#404c5a"}
             variant={"link"}
-            href={"/register"}
+            href={"/favorites"}
           >
             Favoritos
           </Button>

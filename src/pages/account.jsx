@@ -5,9 +5,9 @@ import { useSession, signOut, getSession } from "next-auth/react";
 
 // ESTE COMPONENTE PUEDE MOSTRAR PAGINA DE DETALLE DE CUENTA - O DASHBOAARD USER
 
-const account = () => {
+const Account = () => {
   const { data: session, status } = useSession({ required: true });
-  console.log(session); //me va a dar  objeto con la info de la sesion
+  //console.log(session); //me va a dar  objeto con la info de la sesion
 
   if (status === "authenticated") {
     return (
@@ -16,19 +16,19 @@ const account = () => {
         <button onClick={() => signOut()}>Cerrar Sesión</button>
       </div>
     );
-  } else {
+  } /* else {
     return (
       <div>
         <p>Login</p>
         <button onClick={() => signIn()}>Iniciar Sesión</button>
       </div>
     );
-  }
+  } */
 };
 
-export default account;
+export default Account;
 
-export const getServerSideProps = async (context) => {
+/* export const getServerSideProps = async (context) => {
   const session = await getSession(context);
   if (!session) {
     return {
@@ -42,3 +42,4 @@ export const getServerSideProps = async (context) => {
     props: { session },
   };
 };
+ */

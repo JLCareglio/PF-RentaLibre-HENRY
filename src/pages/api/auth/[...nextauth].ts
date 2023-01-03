@@ -12,6 +12,11 @@ import { prisma } from "../../../server/db/client";
 
 //const prisma = new PrismaClient();
 
+/* const userdDB = async () => {
+  const userDB = await prisma.user.findUnique({ where: { id: token.sub } });
+  return userDB;
+}; */
+
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export const authOptions: NextAuthOptions = {
@@ -66,6 +71,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.JWT_SECRET,
 
   session: {
+    strategy: "jwt",
     // Use JSON Web Tokens for session instead of database sessions.
     // This option can be used with or without a database for users/accounts.
     // Note: `jwt` is automatically set to `true` if no database is specified.
@@ -83,7 +89,8 @@ export const authOptions: NextAuthOptions = {
   // https://next-auth.js.org/configuration/options#jwt
   jwt: {
     // A secret to use for key generation (you should set this explicitly)
-    // secret: 'INp8IvdIyeMcoGAgFGoA61DdBglwwSqnXJZkgz8PSnw',
+    secret: "secreto-provisorio",
+    maxAge: 60 * 60 * 24 * 30,
     // Set to true to use encryption (default: false)
     // encryption: true,
     // You can define your own encode/decode functions for signing and encryption
@@ -117,12 +124,37 @@ export const authOptions: NextAuthOptions = {
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
-    async session(session, user) {
-      if (session.user) {
-        session.user.id = user.id;
+
+    async session({ session, token }) {
+      const userDB = await prisma.user.findUnique({ where: { id: token.sub } });
+
+      if (session) {
+        session.userDB = userDB;
+        //para que el backend tome bien el id del usuario
+        if (session.user != undefined && userDB?.id) {
+          session.user["id"] = userDB?.id;
+        }
       }
+      //console.log(session);
       return session;
     },
+
+    async jwt({ token, account, profile, user, isNewUser }) {
+      // Persist the OAuth access_token and or the user id to the token right after signin
+      const userDB = await prisma.user.findUnique({ where: { id: token.sub } });
+
+      if (account) {
+        token.accessToken = account.access_token;
+        //token.id = profile.id
+      }
+      if (user) {
+        token.role = userDB?.role;
+      }
+      //console.log(token)
+
+      return token;
+    },
+
     // async jwt(token, user, account, profile, isNewUser) { return token }
   },
 

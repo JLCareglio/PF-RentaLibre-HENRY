@@ -4,12 +4,9 @@
 
 //FALTA PASAR A TSX !!
 
-import { GetStaticProps, GetStaticPaths } from "next";
-import type { RouterOutputs } from "../../utils/trpc";
 import { trpc } from "../../utils/trpc";
 import {
   Box,
-  chakra,
   Container,
   Stack,
   Text,
@@ -21,21 +18,14 @@ import {
   SimpleGrid,
   StackDivider,
   useColorModeValue,
-  VisuallyHidden,
   List,
   ListItem,
+  Badge,
 } from "@chakra-ui/react";
-import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 import { MdLocalShipping } from "react-icons/md";
-import { None } from "framer-motion";
-import {
-  ReactElement,
-  JSXElementConstructor,
-  ReactFragment,
-  ReactPortal,
-} from "react";
 import { useRouter } from "next/router";
-
+import { useSession } from "next-auth/react";
+import React from "react";
 // type Params = {
 //   params: {
 //     id: string;
@@ -74,9 +64,62 @@ import { useRouter } from "next/router";
 
 export default function ProductDetail() {
   const router = useRouter();
-  const { id } = router.query;
+  const session = useSession();
+  const { id }:any = router.query;
   //trae del back con id
   const product = trpc.product.getProductByID.useQuery({ id }).data;
+  const addFavorite = trpc.user.addFavorite.useMutation();
+
+  const colorTxt = useColorModeValue("black", "gray.900");
+  const colorBg = useColorModeValue("yellow.300", "orange.50");
+
+  async function handleSubmit() {
+    try {
+      const res = await fetch("https://api.mercadopago.com/checkout/preferences", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer APP_USR-5672095275524228-121515-ef3e594e4fc515b3e4d7d98cff8d97e1-1263932815`
+        },
+        body: JSON.stringify({
+            payer:
+              {
+                email: session?.data?.user?.email,
+                phone: ""
+              },
+            items: [
+              {
+                title: product?.title,
+                description: product?.description,
+                picture_url: product?.pictures[0],
+                category_id: product?.category,
+                quantity: 1,//AGREGAR PRODUCT?.QUANTITY a schema
+                unit_price: product?.price
+              }
+            ],
+            back_urls: {
+              success: 'http://localhost:3000/success',
+              failure: 'http://localhost:3000/failure',
+              pending: 'http://localhost:3000/pending'
+            },
+            notification_url: 'https://04c5-191-97-97-69.sa.ngrok.io/api/notificar'
+          })
+      });
+      const json = await res.json();
+      console.log(json, session?.data?.user?.email)
+      router.push(json.init_point)
+    } catch (error) {
+      console.error(error);
+    }
+}
+
+  const handleFavorites = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    addFavorite.mutate({ productId: id });
+
+    alert(`${product?.title} agregado a favoritos`);
+  };
+
   return (
     <Container maxW={"7xl"}>
       <SimpleGrid
@@ -112,7 +155,25 @@ export default function ProductDetail() {
               {"$ " + product?.price}
             </Text>
           </Box>
-
+          {session.status === "authenticated" ? (
+            <Button
+              rounded={"none"}
+              w={"full"}
+              mt={8}
+              size={"lg"}
+              py={"7"}
+              bg={colorBg}
+              color={colorTxt}
+              textTransform={"uppercase"}
+              _hover={{
+                transform: "translateY(2px)",
+                boxShadow: "lg",
+              }}
+              onClick={(e) => handleFavorites(e)}
+            >
+              Añadir a favoritos
+            </Button>
+          ) : null}
           <Stack
             spacing={{ base: 4, sm: 6 }}
             direction={"column"}
@@ -219,7 +280,7 @@ export default function ProductDetail() {
               </List>
             </Box>
           </Stack>
-
+          
           <Button
             rounded={"none"}
             w={"full"}
@@ -233,8 +294,17 @@ export default function ProductDetail() {
               transform: "translateY(2px)",
               boxShadow: "lg",
             }}
+            onClick={handleSubmit}
           >
-            Consultar Disponibilidad
+            {product?.availability ? (
+              <Badge ml={2} colorScheme="green">
+                Disponible para renta!
+              </Badge>
+            ) : (
+              <Badge ml={2} colorScheme="red">
+                No disponible
+              </Badge>
+            )}
           </Button>
 
           <Stack direction="row" alignItems="center" justifyContent={"center"}>
