@@ -99,7 +99,7 @@ export default function ProductDetail() {
               failure: 'http://localhost:3000/failure',
               pending: 'http://localhost:3000/pending'
             },
-            notification_url: 'https://04c5-191-97-97-69.sa.ngrok.io/api/notificar'
+            notification_url: 'https://7f07-191-97-97-72.sa.ngrok.io/api/notificar'
           })
       });
       const json = await res.json();
