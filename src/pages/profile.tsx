@@ -448,7 +448,7 @@ export default function Profile() {
               onChange={(e) => handleSelect(e)}
             >
               {provincias().map((s:any) => (
-                  <option value={s.nombre}>{s.nombre}</option>
+                  <option key={s.id} value={s.nombre}>{s.nombre}</option>
                 ))}
             </Select>
           ) : null}
@@ -465,7 +465,7 @@ export default function Profile() {
               {localidades()
               .filter((ci:any) => ci.provincia.nombre === editUser.stateName)
               .map((ci:any) => (
-                  <option value={ci.municipio.nombre}>{ci.municipio.nombre}</option>
+                  <option key={ci.id} value={ci.municipio.nombre}>{ci.municipio.nombre}</option>
                 ))}
             </Select>
           ) : null}
