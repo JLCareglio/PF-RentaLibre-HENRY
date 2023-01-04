@@ -21,7 +21,6 @@ model User {
   products       Product[]
   rater          Rating[] @relation(name: "userRater")
   rated          Rating[] @relation(name: "userRated")
-  userPicture    String?
   seller         Transanction[] @relation(name: "seller")
   buyer          Transanction[] @relation(name: "buyer") 
   emailVerified  DateTime?
@@ -31,6 +30,9 @@ model User {
   favorites      Favorito[]
   active         Boolean @default(true)
   feedback       String?
+  location       Location?
+  phoneNumber    String?
+  codigoPostal   String?
   role Role @default(USER)
   location       Location?
   phoneNumber    String?
