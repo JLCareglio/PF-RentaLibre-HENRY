@@ -124,20 +124,23 @@ export const userRouter = router({
         },
         data: {
           active: false,
-          detetedAt: new Date().toISOString(),
+          // detetedAt: new Date().toISOString(),
         },
       });
       return favorite;
     }),
-  getUser: protectedProcedure
-    .input(z.object({ userId: z.string().optional() }))
+  getUser: publicProcedure
+  //  protectedProcedure
+    .input(z.object({ userId: z.string()}))
     .query(async ({ ctx, input }) => {
       const { userId } = input;
       const user = await ctx.prisma.user.findUnique({
         where: {
-          id: userId || ctx.session.user.id,
+          id: userId 
+          // || ctx.session.user.id,
         },
         include: {
+          products: true,
           buyer: {
             include: {
               product: true,
@@ -191,4 +194,37 @@ export const userRouter = router({
       });
       return favorites;
     }),
-});
+    userUpdate: publicProcedure
+    .input(z.object({
+      name:z.string().optional(),
+      userPicture: z.string().optional(),
+      lastName: z.string().optional(),
+      codigoPostal: z.string().optional(),
+      countryName:z.string().optional(),
+      stateName:z.string().optional(),
+      cityName:z.string().optional(),
+      phoneNumber: z.string().optional()
+    }))
+    .mutation(async ({ctx,input})=>{
+      const {name, userPicture, lastName,codigoPostal,
+        countryName,stateName,cityName, phoneNumber} = input
+      const updateUser = await ctx.prisma.user.update({
+      where: {
+        id:'639640531a4b6c6f07111635'
+      },
+      data: {
+      phoneNumber,
+      name,
+      image:userPicture,
+      lastName,
+      codigoPostal,
+      location: {
+        country:countryName,
+        state:stateName,
+        city:cityName
+      },
+      }
+    })
+    return updateUser
+  })
+})
