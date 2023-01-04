@@ -41,7 +41,7 @@ export default function DashboardRentedProducts() {
         {user && seller
           ? user.seller.map((trans) => {
               return (
-                <Box>
+                <Box key={trans.transactionID}>
                   <Accordion allowToggle w="85%">
                     <AccordionItem>
                       <h2>
@@ -125,7 +125,7 @@ export default function DashboardRentedProducts() {
           : user &&
             user.buyer.map((trans) => {
               return (
-                <Box>
+                <Box key={trans.transactionID}>
                   <Accordion allowToggle w="85%">
                     <AccordionItem>
                       <h2>
