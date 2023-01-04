@@ -3,16 +3,17 @@ import { trpc } from "../utils/trpc";
 import React, { useState} from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebaseConfig";
-import { extendTheme } from "@chakra-ui/react";
 import { Select } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
 import DashboardRentedProducts from "../components/dashboardRentedProducts";
 import PhoneNumberInput from "../components/phone-input";
 import { provincias } from "./provincias-ciudades/provincias";
 import { localidades } from "./provincias-ciudades/localidades";
+import { useSession, signIn, signOut, getSession } from "next-auth/react";
 
 
 export default function Profile() {
+  const { data: session } = useSession();
   const [editUser, setEditUser] = useState({
     name: "",
     userPicture: "",
@@ -45,15 +46,13 @@ export default function Profile() {
     "2xl": "1536px",
   };
 
-  const theme = extendTheme({ breakpoints });
-
   const hiddenFileInput: any = React.useRef(null);
 
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
   const user = trpc.user.getUser.useQuery({
-    userId: "639640531a4b6c6f07111635",
+    userId: session?.userDB.id,
   }).data;
 
   const userUpdate = trpc.user.userUpdate.useMutation();
@@ -122,8 +121,9 @@ export default function Profile() {
       phoneNumber,
     } = editUser;
     userUpdate.mutate({
+      userId: session?.userDB.id,
       name: name ? name : user?.name,
-      userPicture: userPicture ? userPicture : user?.image,
+      userPicture: userPicture ? userPicture : user?.image ? user.image : "",
       lastName: lastName ? lastName : user?.lastName ? user.lastName : "",
       codigoPostal: codigoPostal
         ? codigoPostal
@@ -159,6 +159,7 @@ export default function Profile() {
       changeLocation: false,
       seeTransactions: false,
     });
+
   }
 
   function handleDismissClick() {
@@ -175,6 +176,7 @@ export default function Profile() {
     setError({...error, inputPhone: false })
 
   }
+  if (session) {
   return (
     <Box h="fit-content">
       <Text mt="25px" textAlign="center" color="grey" fontSize="25px">
@@ -470,7 +472,8 @@ export default function Profile() {
             </Select>
           ) : null}
 
-          {editUser.userPicture ||
+          { 
+          editUser.userPicture ||
           editUser.stateName ||
           editUser.phoneNumber ||
           editUser.name ||
@@ -479,7 +482,7 @@ export default function Profile() {
           editUser.cityName ||
           editUser.countryName ? (
             <Flex mb="2%">
-              {!error.inputPhone && (
+              {!error.inputPhone &&  (
                 <Button
                   _hover={{ bg: "#404c5a", color: "white" }}
                   onClick={handleSaveClick}
@@ -528,4 +531,12 @@ export default function Profile() {
       </Flex>
     </Box>
   );
+ }
+//  else {
+//   return (
+//     <div>
+//       <button onClick={() => signIn()}>Iniciar Sesión</button>
+//     </div>
+//   );
+// }
 }

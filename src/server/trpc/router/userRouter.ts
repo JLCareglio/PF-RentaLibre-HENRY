@@ -124,23 +124,20 @@ export const userRouter = router({
         },
         data: {
           active: false,
-          // detetedAt: new Date().toISOString(),
+          detetedAt: new Date().toISOString(),
         },
       });
       return favorite;
     }),
-  getUser: publicProcedure
-  //  protectedProcedure
-    .input(z.object({ userId: z.string()}))
+  getUser: protectedProcedure
+    .input(z.object({ userId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       const { userId } = input;
       const user = await ctx.prisma.user.findUnique({
         where: {
-          id: userId 
-          // || ctx.session.user.id,
+          id: userId || ctx.session.user.id,
         },
         include: {
-          products: true,
           buyer: {
             include: {
               product: true,
@@ -196,6 +193,7 @@ export const userRouter = router({
     }),
     userUpdate: publicProcedure
     .input(z.object({
+      userId:z.string().optional(),
       name:z.string().optional(),
       userPicture: z.string().optional(),
       lastName: z.string().optional(),
@@ -207,10 +205,10 @@ export const userRouter = router({
     }))
     .mutation(async ({ctx,input})=>{
       const {name, userPicture, lastName,codigoPostal,
-        countryName,stateName,cityName, phoneNumber} = input
+        countryName,stateName,cityName, phoneNumber,userId} = input
       const updateUser = await ctx.prisma.user.update({
       where: {
-        id:'639640531a4b6c6f07111635'
+        id:userId
       },
       data: {
       phoneNumber,
@@ -227,4 +225,4 @@ export const userRouter = router({
     })
     return updateUser
   })
-})
+});

@@ -8,10 +8,12 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { trpc } from "../utils/trpc";
+import { useSession, signIn, signOut, getSession } from "next-auth/react";
 
 export default function DashboardRentedProducts() {
+  const { data: session } = useSession();
   const user = trpc.user.getUser.useQuery({
-    userId: "639640531a4b6c6f07111635",
+    userId: session?.userDB.id,
   }).data;
   const [seller, setSeller] = useState(true);
 
