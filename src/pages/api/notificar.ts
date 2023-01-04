@@ -1,5 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 
+
+
 export const config = {
   api: {
       externalResolver: true
@@ -36,4 +38,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         console.log(merchant_order)
         break
     }
+    var paidAmount = 0;
+    merchant_order.payments.forEach((payment: {
+      transaction_amount: number; status: string; 
+}) => {
+      if(payment.status === "approved"){
+        paidAmount += payment.transaction_amount
+      }  
+    })
+
+    if(paidAmount >= merchant_order.payments[0].total_paid_amount) console.log("El pago se completo!!")
   };

@@ -85,7 +85,8 @@ export default function ProductDetail() {
             payer:
               {
                 email: session?.data?.user?.email,
-                phone: ""
+                phone: "",
+                name: session?.data?.user?.name,
               },
             items: [
               {
@@ -98,7 +99,7 @@ export default function ProductDetail() {
               }
             ],
             back_urls: {
-              success: 'http://localhost:3000/success',
+              success: `http://localhost:3000/success`,
               failure: 'http://localhost:3000/failure',
               pending: 'http://localhost:3000/pending'
             },
@@ -106,7 +107,7 @@ export default function ProductDetail() {
           })
       });
       const json = await res.json();
-      console.log(json, session?.data?.user?.email)
+      console.log(json)
       router.push(json.init_point)
     } catch (error) {
       console.error(error);

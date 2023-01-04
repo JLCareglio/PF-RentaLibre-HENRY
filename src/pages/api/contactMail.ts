@@ -24,14 +24,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     port: 465,
     secure: true,
     auth: {
-      user: gmail,
-      pass: gmailPass,
+      user: 'rentalibre2022@gmail.com',
+      pass: 'tvifxepblqvulgtk',
     },
   });
 
   try {
     await transporter.sendMail({
-      from: gmail,
+      from: 'rentalibre2022@gmail.com',
       to: email,
       subject: subject,
       html: `
@@ -40,7 +40,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       `,
     });
   } catch (error) {
-    return res.status(500).json(error?.toString());
+    return res.status(500).json(error);
   }
   return res.status(200).json({ error: "" });
 };
