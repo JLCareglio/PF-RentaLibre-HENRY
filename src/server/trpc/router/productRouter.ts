@@ -179,11 +179,6 @@ export const productRouter = router({
               id: "639640531a4b6c6f07111635",
             },
           },
-          paymentMethod: {
-            connect: {
-              paymentName: "Reba",
-            },
-          },
         },
         include: {
           category: true,
@@ -192,17 +187,19 @@ export const productRouter = router({
       });
     }),
 
-  deleteProduct: publicProcedure.mutation(async ({ ctx }) => {
-    const deleteProduct = await ctx.prisma.user.update({
-      where: {
-        id: "6395a57846a0e8adb17b8257",
+  deleteProduct: publicProcedure
+  .input(z.object({productId: z.string(),deleted: z.boolean()}))
+  .mutation(async ({ ctx,input}) => {
+    const {productId,deleted} = input;
+    const deleteProduct = await ctx.prisma.product.update({
+       where: {
+        id: productId,
       },
       data: {
-        products: {
-          deleteMany: [{ id: "6395dd0bc06f1d7ba549237a" }],
-        },
-      },
-    });
+        deleted
+    }
+  });
+  return deleteProduct
   }),
   updateProduct: publicProcedure.mutation(async ({ ctx }) => {
     const updateProduct = await ctx.prisma.user.update({
@@ -224,4 +221,21 @@ export const productRouter = router({
       },
     });
   }),
+  disableProduct: publicProcedure
+  .input(z.object({
+    disabled: z.boolean(),
+    productId: z.string()
+  }))
+  .mutation(async ({ctx,input})=>{
+    const {disabled,productId} = input
+    const disabledProduct = await ctx.prisma.product.update({
+      where: {
+        id: productId
+      },
+      data: {
+        disabled,
+      }
+    })
+  return disabledProduct
+}),
 });

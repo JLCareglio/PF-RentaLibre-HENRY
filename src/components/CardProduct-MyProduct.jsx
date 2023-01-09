@@ -15,8 +15,9 @@ import {
   Box,
   Switch,
 } from "@chakra-ui/react";
+import { trpc } from "../utils/trpc";
 //import Rating from '@mui/material/Rating';
-
+import React, { useState} from "react";
 
 export default function CardProductMyProduct({
   id,
@@ -24,6 +25,8 @@ export default function CardProductMyProduct({
   productName,
   productPrice,
   rating,
+  disabled,
+  deleted,
 }) {
   let avarage = 0;
   if (rating && rating.length > 0) {
@@ -31,6 +34,21 @@ export default function CardProductMyProduct({
     rating?.forEach((rating) => (sum += rating.stars));
     avarage = sum / rating.length;
   }
+  const [state, setState] = useState({
+    disabled: disabled,
+    deleted: deleted
+  });
+  const disableProduct = trpc.product.disableProduct.useMutation()
+  const deleteProduct = trpc.product.deleteProduct.useMutation()
+      function handleDisableProduct () {
+        disableProduct.mutateAsync({productId:id,disabled: state.disabled ? false : true})
+        .then((data) => setState((prevState)=>{return {disabled:data.disabled}})
+          )
+       }
+       function handleDeleteProduct () {
+        deleteProduct.mutateAsync({productId:id,deleted: state.deleted ? false : true})
+        .then((data) => setState((prevState)=>{return {...prevState,deleted:data.deleted}}))
+       }
   return (
     <Center py={6}>
       
@@ -88,18 +106,21 @@ export default function CardProductMyProduct({
           justifyContent='center'
           spacing='15px'
           >
-            <Switch fontSize='sm'>
+            <Switch fontSize='sm' onChange={handleDisableProduct} isChecked={!state.disabled}>
               Activar / Desactivar
             </Switch>
 
             <a href={`/account/edit-publication/${id}`}>
-            <Button size='sm'>
+            <Button size='sm' bgColor='blue.400' _hover={{bgColor:'blue.500'}}>
               Editar Publicación
             </Button>
             </a>
 
-            <Button size='sm'>
-              Borrar Publicación
+            <Button size='sm' onClick={handleDeleteProduct}
+            _hover={{bgColor: state.deleted ? 'green.500' : "red.500"}}
+            bgColor={ state.deleted ? 'green.400' : "red.400"}
+            >
+             {state.deleted ? 'Restablecer Publicación' : 'Borrar Publicación'}
             </Button>
     
 
