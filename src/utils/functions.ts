@@ -104,7 +104,7 @@ export function createPaymentmethod() {
 }
 
 export function deleteProduct() {
-  deleteP.mutate();
+  // deleteP.mutate();
   // deleteR.mutate();
 }
 
