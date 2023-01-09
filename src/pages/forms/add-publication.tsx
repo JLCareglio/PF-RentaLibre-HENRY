@@ -38,7 +38,7 @@ import { uploadFile } from "../../utils/upload-functions/firebase-functions";
 
 interface InitValues {
     title: string;
-    category: any; //recibe un onbjete {name, id}
+    category: string;
     description: string;
     price: any; // es any por que de lo contrario, en init state, me aparece un 0 en el campo.
     brand: string;
