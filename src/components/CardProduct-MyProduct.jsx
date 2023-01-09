@@ -47,7 +47,7 @@ export default function CardProductMyProduct({
           boxShadow={"xl"}
           padding={4}>
 
-          <Link href={`/account/edit-publication/${id}`}>
+          <Link href={`/productDetail/${id}`}>
           <Flex flex={0.4} /* bg="blue.400" */ align="center">
             <Box w="170px"/* bg="red.500" */>
               <Image
@@ -62,7 +62,7 @@ export default function CardProductMyProduct({
           </Flex>
           </Link>
 
-          <Link href={`/account/edit-publication/${id}`}>
+          <Link href={`/productDetail/${id}`}>
           <Stack
             w={{ sm: "100%", md: "500px" }}
             flex={1}
@@ -92,7 +92,7 @@ export default function CardProductMyProduct({
               Activar / Desactivar
             </Switch>
 
-            <a href='/account/edit-publication'>
+            <a href={`/account/edit-publication/${id}`}>
             <Button size='sm'>
               Editar Publicación
             </Button>
