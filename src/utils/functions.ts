@@ -98,20 +98,20 @@ export function handleChangeRatingProduct(
   });
 }
 
-export function createPaymentmethod() {
-  createPayment.mutate();
-  makeTransaction.mutate();
-}
+// export function createPaymentmethod() {
+//   createPayment.mutate();
+//   makeTransaction.mutate();
+
 
 export function deleteProduct() {
   // deleteP.mutate();
   // deleteR.mutate();
 }
 
-export function updateProduct() {
-  updateP.mutate();
+// export function updateProduct() {
+//   updateP.mutate();
   //updateR.mutate();
-}
+
 
 export function deleteUser() {
   // deleteU.mutate();
