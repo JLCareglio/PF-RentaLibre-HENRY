@@ -201,25 +201,35 @@ export const productRouter = router({
   });
   return deleteProduct
   }),
-  updateProduct: publicProcedure.mutation(async ({ ctx }) => {
-    const updateProduct = await ctx.prisma.user.update({
+  updateProduct: publicProcedure
+  .input(z.object({
+    title:z.string().optional(),
+    categoryId:z.string().optional(),
+    model:z.string().optional(),
+    brand:z.string().optional(),
+    price:z.number().optional(),
+    securityDeposit:z.number().optional(),
+    description:z.string().optional(),
+    productId: z.string(),
+    pictures: z.array(z.string()).optional()
+  }))
+  .mutation(async ({ ctx,input}) => {
+   const {pictures,title,categoryId,model,brand,price,securityDeposit,description,productId} = input
+    const updateProduct = await ctx.prisma.product.update({
       where: {
-        id: "6395a57846a0e8adb17b8257",
+        id: productId,
       },
       data: {
-        products: {
-          update: {
-            where: {
-              id: "6395d258c9f34b57356092e9",
-            },
-            data: {
-              title: "Moto Voladora",
-              price: 5.5,
-            },
-          },
-        },
+        title,
+        category: {
+         connect: {
+          id: categoryId
+         }
       },
-    });
+      model,brand,price,securityDeposit,description,pictures
+    }
+   })
+   return updateProduct
   }),
   disableProduct: publicProcedure
   .input(z.object({
