@@ -339,7 +339,7 @@ export default function EditPublication() {
        return [positionPicture - 1,p]
     }).map((p) => {
         return (
-        <Tab onClick={()=>setEditPublication((prevState)=>{return {...prevState,picturePosition:p[0]}})}>
+        <Tab key={p[0]} onClick={()=>setEditPublication((prevState)=>{return {...prevState,picturePosition:p[0]}})}>
           {publicationPictures[p[0]][0] ? (
         <Flex w="100%" justifyContent="center">
           <Spinner color="blue" size="xl" />{" "}
